@@ -33,5 +33,9 @@ public class UserServiceImpl implements UserService{
         return userRepository.findByEmailAddress(emailAddress);
     }
 
+    @Override
+    public User findByPassword(String password){
+        return userRepository.findByPassword(password);
+    }
 
 }
