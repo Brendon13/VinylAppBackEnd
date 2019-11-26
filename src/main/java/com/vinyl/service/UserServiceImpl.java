@@ -22,6 +22,13 @@ public class UserServiceImpl implements UserService{
         userRepository.save(user);
     }
 
+    @Override
+    public void saveManager(User user) {
+        user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+        user.setUserRole(new UserRole((long)2,"manager"));
+        userRepository.save(user);
+    }
+
     @Transactional
     @Override
     public void delete(User user){
@@ -31,11 +38,6 @@ public class UserServiceImpl implements UserService{
     @Override
     public User findByEmailAddress(String emailAddress) {
         return userRepository.findByEmailAddress(emailAddress);
-    }
-
-    @Override
-    public User findByPassword(String password){
-        return userRepository.findByPassword(password);
     }
 
 }
