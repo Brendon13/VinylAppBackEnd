@@ -8,5 +8,4 @@ import com.vinyl.model.User;
 @Repository
 public interface UserRepository extends CrudRepository<User, Long> {
         User findByEmailAddress(String emailAddress);
-        User findByPassword(String password);
 }

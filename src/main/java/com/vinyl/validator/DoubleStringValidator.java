@@ -1,0 +1,12 @@
+package com.vinyl.validator;
+
+import javax.validation.ConstraintValidator;
+import javax.validation.ConstraintValidatorContext;
+
+public class DoubleStringValidator implements ConstraintValidator<DoubleString, String> {
+    @Override
+    public boolean isValid(String str, ConstraintValidatorContext constraintValidatorContext) {
+        if (str.matches("^[+]?[0-9]*\\.?[0-9]+")) return true;
+        return false;
+    }
+}

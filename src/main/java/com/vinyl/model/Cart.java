@@ -17,6 +17,9 @@ public class Cart {
     @JoinColumn(name = "orders_id", nullable = false, foreignKey=@ForeignKey(name = "Fk_cart_orders_id"))
     private Order order;
 
+    public Cart() {
+    }
+
     public Long getId() {
         return id;
     }
