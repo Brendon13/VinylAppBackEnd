@@ -16,26 +16,19 @@ public class Item {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotNull(message = "Name can't be blank")
     @NotBlank(message = "Name can't be blank")
     private String name;
 
     @NotNull(message = "Price can't be blank")
-    @NotBlank(message = "Price can't be blank")
-    @DoubleString(message = "Price should be numeric and positive")
+    //@DoubleString(message = "Price should be numeric and positive")
     private Double price;
 
-    @NotNull(message = "Description can't be blank")
     @NotBlank(message = "Description can't be blank")
     private String description;
 
     @NotNull(message = "Quantity can't be blank")
-    @NotBlank(message = "Quantity can't be blank")
-    @NumericString(message = "Quantity should be numeric and positive")
+    //@NumericString(message = "Quantity should be numeric and positive")
     private Long quantity;
-
-    @OneToMany(mappedBy = "item")
-    private Set<OrderItem> orderItem;
 
     public Long getId() {
         return id;
@@ -75,14 +68,6 @@ public class Item {
 
     public void setQuantity(Long quantity) {
         this.quantity = quantity;
-    }
-
-    public Set<OrderItem> getOrderItem() {
-        return orderItem;
-    }
-
-    public void setOrderItem(Set<OrderItem> orderItem) {
-        this.orderItem = orderItem;
     }
 }
 

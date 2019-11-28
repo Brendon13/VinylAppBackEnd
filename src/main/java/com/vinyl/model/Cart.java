@@ -1,6 +1,7 @@
 package com.vinyl.model;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name = "cart")
@@ -43,4 +44,5 @@ public class Cart {
     public void setOrder(Order order) {
         this.order = order;
     }
+
 }

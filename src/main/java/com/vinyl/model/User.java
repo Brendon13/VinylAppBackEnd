@@ -14,28 +14,18 @@ public class User {
     @GeneratedValue
     private Long id;
 
-    @NotNull(message = "First name can't be blank")
     @NotBlank(message = "First name can't be blank")
     private String firstName;
 
-    @NotNull(message = "Last name can't be blank")
     @NotBlank(message = "Last name can't be blank")
     private String lastName;
 
     @Email(message = "Not email address format")
-    @NotNull(message = "Email Address can't be blank")
     @NotBlank(message = "Email Address can't be blank")
     private String emailAddress;
 
-    @NotNull(message = "Password can't be blank")
     @NotBlank(message = "Password can't be blank")
     private String password;
-
-    @OneToOne(mappedBy="user")
-    private Cart cart;
-
-    @OneToMany(mappedBy="user")
-    private Set<Order> order;
 
     @OneToOne
     @JoinColumn(name = "user_role_id", nullable = false, foreignKey=@ForeignKey(name = "Fk_user_user_role_id"))
@@ -89,22 +79,6 @@ public class User {
 
     public void setPassword(String password) {
         this.password = password;
-    }
-
-    public Cart getCart() {
-        return cart;
-    }
-
-    public void setCart(Cart cart) {
-        this.cart = cart;
-    }
-
-    public Set<Order> getOrder() {
-        return order;
-    }
-
-    public void setOrder(Set<Order> order) {
-        this.order = order;
     }
 
     public UserRole getUserRole() {
