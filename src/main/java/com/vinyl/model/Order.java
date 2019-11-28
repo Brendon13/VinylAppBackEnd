@@ -32,15 +32,13 @@ public class Order {
     @LastModifiedDate
     private Date updatedAt;
 
-    @OneToMany(mappedBy = "order")
-    private Set<OrderItem> orderItem;
-
-    @OneToOne(mappedBy = "order")
-    private Cart cart;
-
     @ManyToOne
     @JoinColumn(name="user_id", nullable=false, foreignKey=@ForeignKey(name = "Fk_orders_user_id"))
     private User user;
+
+    @OneToOne
+    @JoinColumn(name = "status_id", nullable = false, foreignKey=@ForeignKey(name = "Fk_orders_status_id"))
+    private Status status;
 
     public Long getId() {
         return id;
@@ -48,14 +46,6 @@ public class Order {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Set<OrderItem> getOrderItem() {
-        return orderItem;
-    }
-
-    public void setOrderItem(Set<OrderItem> orderItem) {
-        this.orderItem = orderItem;
     }
 
     public Double getTotal_price() {
@@ -82,20 +72,20 @@ public class Order {
         this.updatedAt = updatedAt;
     }
 
-    public Cart getCart() {
-        return cart;
-    }
-
-    public void setCart(Cart cart) {
-        this.cart = cart;
-    }
-
     public User getUser() {
         return user;
     }
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Status getStatus() {
+        return status;
+    }
+
+    public void setStatus(Status status) {
+        this.status = status;
     }
 }
 

@@ -11,9 +11,6 @@ public class UserRole {
 
     private String roles;
 
-    @OneToOne(mappedBy="userRole")
-    private User user;
-
     public UserRole(Long id, String roles) {
         this.id = id;
         this.roles = roles;
@@ -37,13 +34,5 @@ public class UserRole {
 
     public void setRoles(String roles) {
         this.roles = roles;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 }

@@ -21,6 +21,7 @@ import com.google.gson.Gson;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -36,10 +37,13 @@ public class MainController {
     private CartService cartService;
 
     @Autowired
-    private OrderItemService orderItemService;
+    private CartItemService cartItemService;
 
     @Autowired
     private OrderService orderService;
+
+    @Autowired
+    private ItemService itemService;
 
     @Autowired
     private AuthenticationManager authenticationManager;
@@ -83,7 +87,7 @@ public class MainController {
     @DeleteMapping(value = "/delete")
     public ResponseEntity<Object> deleteUser(@RequestBody JwtRequest deletionRequest) {
 
-        if (userService.findByEmailAddress(deletionRequest.getUsername()) != null && passwordMatch(deletionRequest)) {
+        if (loggedIn(deletionRequest)) {
             userService.delete(userService.findByEmailAddress(deletionRequest.getUsername()));
             return new ResponseEntity<>("User Deleted!", HttpStatus.NO_CONTENT);
         } else return new ResponseEntity<>("User or password not correct", HttpStatus.FORBIDDEN);
@@ -93,21 +97,21 @@ public class MainController {
     public ResponseEntity<?> getCart(@RequestBody JwtRequest getCartRequest) throws JSONException {
 
         Cart cart = cartService.findByUserId(userService.findByEmailAddress(getCartRequest.getUsername()).getId());
-        List<OrderItem> orderItem = orderItemService.findByOrderId(cart.getOrder().getId());
+        List<CartItem> cartItem = cartItemService.findByOrderId(cart.getOrder().getId());
         Order order = cart.getOrder();
         List<Item> item = new ArrayList<>();
         double totalPrice = 0;
         long itemCount = 0;
 
-        itemCount += orderItem.size();
+        itemCount += cartItem.size();
 
-        orderItem.forEach(oItem -> item.add(oItem.getItem()));
+        cartItem.forEach(oItem -> item.add(oItem.getItem()));
 
-        for(int i = 0; i< (long) orderItem.size(); i++){
-            totalPrice+=orderItem.get(i).getQuantity()*item.get(i).getPrice();
+        for(int i = 0; i< (long) cartItem.size(); i++){
+            totalPrice+= cartItem.get(i).getQuantity()*item.get(i).getPrice();
         }
 
-        order.setTotal_price(totalPrice);
+       // order.setTotal_price(totalPrice);
 
         JSONObject json = new JSONObject();
         json.put("Number of items", itemCount);
@@ -115,22 +119,46 @@ public class MainController {
 
         JSONArray json3 = new JSONArray();
 
-        for(int i = 0; i< (long) orderItem.size(); i++){
+        for(int i = 0; i< (long) cartItem.size(); i++){
             JSONObject json2 = new JSONObject();
             json2.put("Name", item.get(i).getName());
             json2.put("Description", item.get(i).getDescription());
             json2.put("Price", item.get(i).getPrice());
-            json2.put("Quantity", orderItem.get(i).getQuantity());
+            json2.put("Quantity", cartItem.get(i).getQuantity());
             json3.put(json2);
         }
 
         json.put("Items", json3);
 
-        if (userService.findByEmailAddress(getCartRequest.getUsername()) != null && passwordMatch(getCartRequest)) {
-            if(cart.getOrder() == null)
-            return new ResponseEntity<>("No items in cart", HttpStatus.OK);
+        if (loggedIn(getCartRequest))
+            if(itemCount == 0)
+                return new ResponseEntity<>("No items in cart", HttpStatus.OK);
             else return new ResponseEntity<>(json.toString(), HttpStatus.OK);
-        } else return new ResponseEntity<>("You are not logged in", HttpStatus.FORBIDDEN);
+        else return new ResponseEntity<>("You are not logged in", HttpStatus.FORBIDDEN);
+    }
+
+    @RequestMapping(value = "/vinyls/cart", method = RequestMethod.POST)
+    public ResponseEntity<?> addVinyl(@Valid @RequestBody JwtRequest addVinylRequest){
+        Item item = itemService.findById(addVinylRequest.getToken()).get();
+        Cart cart = cartService.findByUserId(userService.findByEmailAddress(addVinylRequest.getUsername()).getId());
+        CartItem cartItem = new CartItem();
+
+        if(loggedIn(addVinylRequest)){
+            if(addVinylRequest.getQuantity()<=0)
+                return new ResponseEntity<>("Quantity can't be negative or zero!", HttpStatus.FORBIDDEN);
+            else if(addVinylRequest.getQuantity()>item.getQuantity()){
+                return new ResponseEntity<>("Quantity too big!", HttpStatus.FORBIDDEN);
+            }
+                else{
+                    cartItem.setItem(item);
+                    cartItem.setCart(cart);
+                    cartItem.setQuantity(addVinylRequest.getQuantity());
+                    cartItemService.save(cartItem);
+
+                    return ResponseEntity.ok("Item added to cart!");
+            }
+        }
+        else return new ResponseEntity<>("You are not logged in", HttpStatus.FORBIDDEN);
     }
 
     private void authenticate(String username, String password) throws Exception {
@@ -146,5 +174,11 @@ public class MainController {
     private Boolean passwordMatch(JwtRequest request){
         return bCryptPasswordEncoder.matches(request.getPassword(),
                 userService.findByEmailAddress(request.getUsername()).getPassword());
+    }
+
+    private Boolean loggedIn(JwtRequest request){
+        if (userService.findByEmailAddress(request.getUsername()) != null && passwordMatch(request))
+            return true;
+        else return false;
     }
 }
