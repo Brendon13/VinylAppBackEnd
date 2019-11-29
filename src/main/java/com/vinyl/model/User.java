@@ -31,6 +31,9 @@ public class User {
     @JoinColumn(name = "user_role_id", nullable = false, foreignKey=@ForeignKey(name = "Fk_user_user_role_id"))
     private UserRole userRole;
 
+    @OneToMany(mappedBy="user", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<Order> order;
+
     @OneToOne(mappedBy="user", cascade = CascadeType.ALL, orphanRemoval = true)
     private Cart cart;
 
@@ -98,5 +101,13 @@ public class User {
 
     public void setCart(Cart cart) {
         this.cart = cart;
+    }
+
+    public Set<Order> getOrder() {
+        return order;
+    }
+
+    public void setOrder(Set<Order> order) {
+        this.order = order;
     }
 }
