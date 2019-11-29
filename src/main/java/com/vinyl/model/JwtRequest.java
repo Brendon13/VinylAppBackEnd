@@ -9,7 +9,6 @@ public class JwtRequest implements Serializable {
     private String username;
     private String password;
     private Long quantity;
-    private Long token;
 
     //need default constructor for JSON Parsing
     public JwtRequest()
@@ -26,7 +25,6 @@ public class JwtRequest implements Serializable {
         this.setUsername(username);
         this.setPassword(password);
         this.setQuantity(quantity);
-        this.setToken(token);
     }
 
     public String getUsername() {
@@ -53,11 +51,4 @@ public class JwtRequest implements Serializable {
         this.quantity = quantity;
     }
 
-    public Long getToken() {
-        return token;
-    }
-
-    public void setToken(Long token) {
-        this.token = token;
-    }
 }

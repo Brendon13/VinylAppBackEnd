@@ -1,7 +1,7 @@
 package com.vinyl.model;
 
 import javax.persistence.*;
-import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "cart")
@@ -14,9 +14,12 @@ public class Cart {
     @JoinColumn(name = "user_id", nullable = false, foreignKey=@ForeignKey(name = "Fk_cart_user_id"))
     private User user;
 
-    @OneToOne
-    @JoinColumn(name = "orders_id", nullable = false, foreignKey=@ForeignKey(name = "Fk_cart_orders_id"))
+    @OneToOne//(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "orders_id", foreignKey=@ForeignKey(name = "Fk_cart_orders_id"))
     private Order order;
+
+    @OneToMany(mappedBy = "cart", cascade = CascadeType.ALL, orphanRemoval = true)
+    private Set<CartItem> cartItem;
 
     public Cart() {
     }
@@ -45,4 +48,11 @@ public class Cart {
         this.order = order;
     }
 
+    public Set<CartItem> getCartItem() {
+        return cartItem;
+    }
+
+    public void setCartItem(Set<CartItem> cartItem) {
+        this.cartItem = cartItem;
+    }
 }
