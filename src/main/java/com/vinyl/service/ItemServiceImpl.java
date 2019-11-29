@@ -18,7 +18,15 @@ public class ItemServiceImpl implements ItemService{
     }
 
     @Override
-    public Optional<Item> findById(Long id){
-        return itemRepository.findById(id);
+    public Item findById(Long id){
+        return itemRepository.getOne(id);
     }
+
+    @Override
+    public Item findByName(String name){
+        return itemRepository.findByName(name);
+    }
+
+    @Override
+    public void delete(Item item) {itemRepository.delete(item);}
 }
