@@ -8,7 +8,9 @@ import java.util.List;
 
 @Repository
 public interface CartItemRepository extends CrudRepository<CartItem, Long> {
-    List<CartItem> findByCartId(Long cartId);
+    List <CartItem> findByCartId(Long cartId);
+    CartItem deleteByItemId(Long itemId);
+    //CartItem delete(CartItem cartItem);
     CartItem findByItemId(Long itemId);
 }
 

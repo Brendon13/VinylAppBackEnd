@@ -22,7 +22,7 @@ public class Order {
 
     private Double total_price;
 
-    @Column(nullable = false, updatable = false)
+    @Column(nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     @CreatedDate
     private Date createdAt;
@@ -36,8 +36,8 @@ public class Order {
     @JoinColumn(name="user_id", nullable=false, foreignKey=@ForeignKey(name = "Fk_orders_user_id"))
     private User user;
 
-    @OneToOne
-    @JoinColumn(name = "status_id", nullable = false, foreignKey=@ForeignKey(name = "Fk_orders_status_id"))
+    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "status_id", foreignKey=@ForeignKey(name = "Fk_orders_status_id"))
     private Status status;
 
     public Long getId() {

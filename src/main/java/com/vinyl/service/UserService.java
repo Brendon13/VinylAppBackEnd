@@ -7,4 +7,5 @@ public interface UserService {
     void saveManager(User user);
     User findByEmailAddress(String emailAddress);
     void delete(User user);
+    User findById(Long id);
 }

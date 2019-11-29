@@ -4,6 +4,7 @@ import com.vinyl.model.CartItem;
 import com.vinyl.repository.CartItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -13,8 +14,8 @@ public class CartItemServiceImpl implements CartItemService {
     private CartItemRepository cartItemRepository;
 
     @Override
-    public List<CartItem> findByOrderId(Long orderId){
-        return (List<CartItem>) cartItemRepository.findByCartId(orderId);
+    public List<CartItem> findByCartId(Long cartId){
+        return cartItemRepository.findByCartId(cartId);
     }
 
     @Override
@@ -26,4 +27,8 @@ public class CartItemServiceImpl implements CartItemService {
     public void save(CartItem cartItem){
         cartItemRepository.save(cartItem);
     }
+
+    @Transactional
+    @Override
+    public void delete(CartItem cartItem){ cartItemRepository.delete(cartItem);}
 }

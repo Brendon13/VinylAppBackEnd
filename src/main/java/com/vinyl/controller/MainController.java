@@ -21,11 +21,10 @@ import com.google.gson.Gson;
 
 import javax.validation.Valid;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Controller
-@RequestMapping(value="/")
+@RequestMapping(value="/VinylStore/api")
 public class MainController {
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
@@ -56,15 +55,20 @@ public class MainController {
 
     private static final Gson gson = new Gson();
 
-    @RequestMapping(value = "/addUser", method = RequestMethod.POST)
+    @RequestMapping(value = "/users", method = RequestMethod.POST)
     public ResponseEntity<Object> addUser(@Valid @RequestBody User user) {
         if (userService.findByEmailAddress(user.getEmailAddress()) == null) {
             userService.save(user);
+
+            Cart cart = new Cart();
+            cart.setUser(user);
+            cartService.save(cart);
+
             return new ResponseEntity<>("User Created!", HttpStatus.OK);
         } else return new ResponseEntity<>("Email already in use!", HttpStatus.FORBIDDEN);
     }
 
-    @RequestMapping(value = "/addManager", method = RequestMethod.POST)
+    @RequestMapping(value = "/managers", method = RequestMethod.POST)
     public ResponseEntity<Object> addManager(@Valid @RequestBody User user) {
         if (userService.findByEmailAddress(user.getEmailAddress()) == null) {
             userService.saveManager(user);
@@ -72,7 +76,7 @@ public class MainController {
         } else return new ResponseEntity<>("Email already in use!", HttpStatus.FORBIDDEN);
     }
 
-    @RequestMapping(value = "/authenticate", method = RequestMethod.POST)
+    @RequestMapping(value = "/users/login", method = RequestMethod.POST)
     public ResponseEntity<?> createAuthenticationToken(@RequestBody JwtRequest authenticationRequest) throws Exception {
 
         authenticate(authenticationRequest.getUsername(), authenticationRequest.getPassword());
@@ -84,21 +88,20 @@ public class MainController {
         return ResponseEntity.ok(new JwtResponse(token));
     }
 
-    @DeleteMapping(value = "/delete")
-    public ResponseEntity<Object> deleteUser(@RequestBody JwtRequest deletionRequest) {
+    @DeleteMapping(value = "/users/{user_id}")
+    public @ResponseBody ResponseEntity<Object> deleteUser(@RequestBody JwtRequest deletionRequest, @PathVariable Long user_id) {
 
         if (loggedIn(deletionRequest)) {
-            userService.delete(userService.findByEmailAddress(deletionRequest.getUsername()));
+            userService.delete(userService.findById(user_id));
             return new ResponseEntity<>("User Deleted!", HttpStatus.NO_CONTENT);
         } else return new ResponseEntity<>("User or password not correct", HttpStatus.FORBIDDEN);
     }
 
-    @RequestMapping(value = "/customer/cart/details", method = RequestMethod.GET)
+    @RequestMapping(value = "/customer/cart/detail", method = RequestMethod.GET)
     public ResponseEntity<?> getCart(@RequestBody JwtRequest getCartRequest) throws JSONException {
 
         Cart cart = cartService.findByUserId(userService.findByEmailAddress(getCartRequest.getUsername()).getId());
-        List<CartItem> cartItem = cartItemService.findByOrderId(cart.getOrder().getId());
-        Order order = cart.getOrder();
+        List<CartItem> cartItem = cartItemService.findByCartId(cart.getId());
         List<Item> item = new ArrayList<>();
         double totalPrice = 0;
         long itemCount = 0;
@@ -110,8 +113,6 @@ public class MainController {
         for(int i = 0; i< (long) cartItem.size(); i++){
             totalPrice+= cartItem.get(i).getQuantity()*item.get(i).getPrice();
         }
-
-       // order.setTotal_price(totalPrice);
 
         JSONObject json = new JSONObject();
         json.put("Number of items", itemCount);
@@ -137,9 +138,9 @@ public class MainController {
         else return new ResponseEntity<>("You are not logged in", HttpStatus.FORBIDDEN);
     }
 
-    @RequestMapping(value = "/vinyls/cart", method = RequestMethod.POST)
-    public ResponseEntity<?> addVinyl(@Valid @RequestBody JwtRequest addVinylRequest){
-        Item item = itemService.findById(addVinylRequest.getToken()).get();
+    @RequestMapping(value = "/vinyls/cart/{vinyl_id}", method = RequestMethod.POST)
+    public @ResponseBody ResponseEntity<?> addVinyl(@Valid @RequestBody JwtRequest addVinylRequest, @PathVariable Long vinyl_id){
+        Item item = itemService.findById(vinyl_id).get();
         Cart cart = cartService.findByUserId(userService.findByEmailAddress(addVinylRequest.getUsername()).getId());
         CartItem cartItem = new CartItem();
 
@@ -157,6 +158,22 @@ public class MainController {
 
                     return ResponseEntity.ok("Item added to cart!");
             }
+        }
+        else return new ResponseEntity<>("You are not logged in", HttpStatus.FORBIDDEN);
+    }
+
+    @DeleteMapping(value = "/users/{user_id}/cart/{item_id}")
+    public @ResponseBody ResponseEntity<?> removeVinyl(@RequestBody JwtRequest deleteVinylRequest, @PathVariable Long user_id, @PathVariable Long item_id){
+        Cart cart = cartService.findByUserId(user_id);
+        List<CartItem> cartItem = cartItemService.findByCartId(cart.getId());
+
+        if(loggedIn(deleteVinylRequest)){
+            cartItem.forEach(cItem -> {
+                if(cItem.getItem().getId().equals(item_id))
+                    cartItemService.delete(cItem);
+            });
+
+            return ResponseEntity.ok("Item deleted from cart!");
         }
         else return new ResponseEntity<>("You are not logged in", HttpStatus.FORBIDDEN);
     }

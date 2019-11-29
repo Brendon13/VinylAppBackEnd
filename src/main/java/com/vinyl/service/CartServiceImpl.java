@@ -19,4 +19,7 @@ public class CartServiceImpl implements CartService {
     public void save(Cart cart){
         cartRepository.save(cart);
     }
+
+    @Override
+    public void delete(Cart cart) {cartRepository.delete(cart);}
 }
