@@ -7,5 +7,7 @@ import java.util.Optional;
 
 public interface ItemService {
     void save(Item item);
-    Optional<Item> findById(Long id);
+    Item findById(Long id);
+    Item findByName(String name);
+    void delete(Item item);
 }

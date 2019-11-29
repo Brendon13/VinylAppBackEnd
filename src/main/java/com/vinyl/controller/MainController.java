@@ -1,5 +1,6 @@
 package com.vinyl.controller;
 
+import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.sun.org.apache.xpath.internal.operations.Bool;
 import com.vinyl.config.JwtTokenUtil;
 import com.vinyl.model.*;
@@ -140,24 +141,28 @@ public class MainController {
 
     @RequestMapping(value = "/vinyls/cart/{vinyl_id}", method = RequestMethod.POST)
     public @ResponseBody ResponseEntity<?> addVinyl(@Valid @RequestBody JwtRequest addVinylRequest, @PathVariable Long vinyl_id){
-        Item item = itemService.findById(vinyl_id).get();
+        Item item = itemService.findById(vinyl_id);
         Cart cart = cartService.findByUserId(userService.findByEmailAddress(addVinylRequest.getUsername()).getId());
         CartItem cartItem = new CartItem();
 
         if(loggedIn(addVinylRequest)){
-            if(addVinylRequest.getQuantity()<=0)
-                return new ResponseEntity<>("Quantity can't be negative or zero!", HttpStatus.FORBIDDEN);
-            else if(addVinylRequest.getQuantity()>item.getQuantity()){
-                return new ResponseEntity<>("Quantity too big!", HttpStatus.FORBIDDEN);
-            }
-                else{
-                    cartItem.setItem(item);
-                    cartItem.setCart(cart);
-                    cartItem.setQuantity(addVinylRequest.getQuantity());
-                    cartItemService.save(cartItem);
+           try {
+               if (addVinylRequest.getQuantity() <= 0)
+                   return new ResponseEntity<>("Quantity can't be negative or zero!", HttpStatus.FORBIDDEN);
+               else if (addVinylRequest.getQuantity() > item.getQuantity()) {
+                   return new ResponseEntity<>("Quantity too big!", HttpStatus.FORBIDDEN);
+               } else {
+                   cartItem.setItem(item);
+                   cartItem.setCart(cart);
+                   cartItem.setQuantity(addVinylRequest.getQuantity());
+                   cartItemService.save(cartItem);
 
-                    return ResponseEntity.ok("Item added to cart!");
-            }
+                   return ResponseEntity.ok("Item added to cart!");
+               }
+           }
+           catch (NullPointerException e){
+               return new ResponseEntity<>("Quantity can't be null!", HttpStatus.FORBIDDEN);
+           }
         }
         else return new ResponseEntity<>("You are not logged in", HttpStatus.FORBIDDEN);
     }
@@ -213,6 +218,75 @@ public class MainController {
             }
         }
         else return new ResponseEntity<>("You are not logged in", HttpStatus.FORBIDDEN);
+    }
+
+    @RequestMapping(value = "/vinyls", method = RequestMethod.POST)
+    public ResponseEntity<?> addVinyl(@RequestBody JwtRequest vinylRequest){
+        Item item = new Item();
+        if(loggedIn(vinylRequest) && userService.findByEmailAddress(vinylRequest.getUsername()).getUserRole().getId() == 2){
+            try {
+                if (vinylRequest.getStock() < 0)
+                    return new ResponseEntity<>("Stock can't be negative!", HttpStatus.FORBIDDEN);
+                else if(vinylRequest.getCost() < 0)
+                    return new ResponseEntity<>("Cost can't be negative!", HttpStatus.FORBIDDEN);
+                    else if(itemService.findByName(vinylRequest.getName()) == null){
+                        item.setQuantity(vinylRequest.getStock());
+                        item.setDescription(vinylRequest.getDescription());
+                        item.setName(vinylRequest.getName());
+                        item.setPrice(vinylRequest.getCost());
+                        itemService.save(item);
+
+                        return ResponseEntity.ok("Item inserted!");
+                        }
+                        else return new ResponseEntity<>("Item already exists!", HttpStatus.FORBIDDEN);
+            }
+            catch (NullPointerException e){
+                return new ResponseEntity<>("Stock can't be null!", HttpStatus.FORBIDDEN);
+            }
+        }
+        else return new ResponseEntity<>("You are not logged in or not a manager!", HttpStatus.FORBIDDEN);
+    }
+
+    @DeleteMapping(value = "/vinyls/{vinyl_id}")
+    public @ResponseBody ResponseEntity<?> deleteVinyl(@RequestBody JwtRequest vinylRequest, @PathVariable Long vinyl_id) {
+        if(loggedIn(vinylRequest) && userService.findByEmailAddress(vinylRequest.getUsername()).getUserRole().getId() == 2){
+            if(itemService.findById(vinyl_id) != null){
+                itemService.delete(itemService.findById(vinyl_id));
+                return new ResponseEntity<>("Item Deleted!", HttpStatus.NO_CONTENT);
+            }
+            else{
+                return new ResponseEntity<>("Item does not exist!", HttpStatus.NOT_FOUND);
+            }
+        }
+        else return new ResponseEntity<>("You are not logged in or not a manager!", HttpStatus.FORBIDDEN);
+    }
+
+    @RequestMapping(value = "/vinyls/{vinyl_id}", method = RequestMethod.PUT)
+    public @ResponseBody ResponseEntity<?> updateVinyl(@RequestBody JwtRequest vinylRequest, @PathVariable Long vinyl_id){
+        Item item = new Item();
+        if(loggedIn(vinylRequest) && userService.findByEmailAddress(vinylRequest.getUsername()).getUserRole().getId() == 2){
+            try {
+                if (vinylRequest.getStock() < 0)
+                    return new ResponseEntity<>("Stock can't be negative!", HttpStatus.FORBIDDEN);
+                else if(vinylRequest.getCost() < 0)
+                    return new ResponseEntity<>("Cost can't be negative!", HttpStatus.FORBIDDEN);
+                else if(itemService.findById(vinyl_id) != null){
+                    item.setQuantity(vinylRequest.getStock());
+                    item.setDescription(vinylRequest.getDescription());
+                    item.setName(vinylRequest.getName());
+                    item.setPrice(vinylRequest.getCost());
+                    item.setId(vinyl_id);
+                    itemService.save(item);
+
+                    return ResponseEntity.ok("Item updated!");
+                }
+                else return new ResponseEntity<>("Item doesn't exists!", HttpStatus.FORBIDDEN);
+            }
+            catch (NullPointerException e){
+                return new ResponseEntity<>("Stock can't be null!", HttpStatus.FORBIDDEN);
+            }
+        }
+        else return new ResponseEntity<>("You are not logged in or not a manager!", HttpStatus.FORBIDDEN);
     }
 
     private void authenticate(String username, String password) throws Exception {
