@@ -36,7 +36,7 @@ public class Order {
     @JoinColumn(name="user_id", nullable=false, foreignKey=@ForeignKey(name = "Fk_orders_user_id"))
     private User user;
 
-    @OneToOne(cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToOne
     @JoinColumn(name = "status_id", foreignKey=@ForeignKey(name = "Fk_orders_status_id"))
     private Status status;
 
