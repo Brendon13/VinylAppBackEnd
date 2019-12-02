@@ -12,7 +12,7 @@ public class OrderServiceImpl implements OrderService {
     @Autowired
     private OrderRepository orderRepository;
 
-    public Optional<Order> findById(Long Id){ return orderRepository.findById(Id); }
+    public Order findById(Long Id){ return orderRepository.getOne(Id); }
 
     @Override
     public void save(Order order){

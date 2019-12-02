@@ -2,6 +2,7 @@ package com.vinyl.controller;
 
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import com.sun.org.apache.xpath.internal.operations.Bool;
+import com.sun.org.apache.xpath.internal.operations.Or;
 import com.vinyl.config.JwtTokenUtil;
 import com.vinyl.model.*;
 import com.vinyl.service.*;
@@ -285,6 +286,25 @@ public class MainController {
             catch (NullPointerException e){
                 return new ResponseEntity<>("Stock can't be null!", HttpStatus.FORBIDDEN);
             }
+        }
+        else return new ResponseEntity<>("You are not logged in or not a manager!", HttpStatus.FORBIDDEN);
+    }
+
+    @RequestMapping(value = "/orders/{order_id}", method = RequestMethod.PUT)
+    public @ResponseBody ResponseEntity<?> updateOrder(@RequestBody JwtRequest orderRequest, @PathVariable Long order_id){
+        Order order;
+        if(loggedIn(orderRequest) && userService.findByEmailAddress(orderRequest.getUsername()).getUserRole().getId() == 2){
+            if(orderService.findById(order_id) != null){
+                if(orderRequest.getStatus() == 1 || orderRequest.getStatus() == 2){
+                    order = orderService.findById(order_id);
+                    order.setStatus(statusService.findById(orderRequest.getStatus()));
+                    orderService.save(order);
+
+                    return ResponseEntity.ok("Order status changed!");
+                }
+                else return new ResponseEntity<>("Status is not a valid Id!", HttpStatus.FORBIDDEN);
+            }
+            else return new ResponseEntity<>("Order doesn't exist!", HttpStatus.NOT_FOUND);
         }
         else return new ResponseEntity<>("You are not logged in or not a manager!", HttpStatus.FORBIDDEN);
     }

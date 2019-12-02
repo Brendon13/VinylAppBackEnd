@@ -14,6 +14,7 @@ public class JwtRequest implements Serializable {
     private Double cost;
     private Long stock;
     private String description;
+    private Long status;
 
     //need default constructor for JSON Parsing
     public JwtRequest()
@@ -26,10 +27,16 @@ public class JwtRequest implements Serializable {
         this.setPassword(password);
     }
 
-    public JwtRequest(String username, String password, Long quantity) {
+    public JwtRequest(String username, String password, Long status) {
         this.setUsername(username);
         this.setPassword(password);
-        this.setQuantity(quantity);
+        this.setQuantity(status);
+    }
+
+    public JwtRequest(Long status, String username, String password) {
+        this.setStatus(status);
+        this.setUsername(username);
+        this.setPassword(password);
     }
 
     public JwtRequest(String username, String password, String name, Double cost, Long stock, String description) {
@@ -95,5 +102,13 @@ public class JwtRequest implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Long getStatus() {
+        return status;
+    }
+
+    public void setStatus(Long status) {
+        this.status = status;
     }
 }
