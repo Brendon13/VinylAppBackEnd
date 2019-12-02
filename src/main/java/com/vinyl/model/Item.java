@@ -1,8 +1,5 @@
 package com.vinyl.model;
 
-import com.vinyl.validator.DoubleString;
-import com.vinyl.validator.NumericString;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
@@ -19,14 +16,12 @@ public class Item {
     private String name;
 
     @NotNull(message = "Price can't be blank")
-    //@DoubleString(message = "Price should be numeric and positive")
     private Double price;
 
     @NotBlank(message = "Description can't be blank")
     private String description;
 
     @NotNull(message = "Quantity can't be blank")
-    //@NumericString(message = "Quantity should be numeric and positive")
     private Long quantity;
 
     public Long getId() {

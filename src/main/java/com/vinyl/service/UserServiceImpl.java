@@ -8,6 +8,8 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 @Service
 public class UserServiceImpl implements UserService{
     @Autowired
@@ -42,7 +44,17 @@ public class UserServiceImpl implements UserService{
 
     @Override
     public User findById(Long id){
-        return userRepository.getOne(id);// .findById(id);
+        return userRepository.getOne(id);
+    }
+//
+//    @Override
+//    public List<User> findAll(){
+//        return userRepository.findAll();
+//    }
+
+    @Override
+    public List<User> findByUserRole(UserRole userRole){
+        return userRepository.findByUserRole(userRole);
     }
 
 }

@@ -1,8 +1,5 @@
 package com.vinyl.controller;
 
-import com.fasterxml.jackson.databind.exc.InvalidFormatException;
-import com.sun.org.apache.xpath.internal.operations.Bool;
-import com.sun.org.apache.xpath.internal.operations.Or;
 import com.vinyl.config.JwtTokenUtil;
 import com.vinyl.model.*;
 import com.vinyl.service.*;
@@ -22,11 +19,12 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import com.google.gson.Gson;
 
+import javax.persistence.EntityExistsException;
+import javax.persistence.EntityNotFoundException;
 import javax.validation.Valid;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicReference;
 
 @Controller
 @RequestMapping(value="/VinylStore/api")
@@ -124,9 +122,9 @@ public class MainController {
 
         for(int i = 0; i< (long) cartItem.size(); i++){
             JSONObject json2 = new JSONObject();
-            json2.put("Name", cartItem.get(i).getItem().getName());//item.get(i).getName());
-            json2.put("Description", cartItem.get(i).getItem().getDescription());//item.get(i).getDescription());
-            json2.put("Price", cartItem.get(i).getItem().getPrice());//item.get(i).getPrice());
+            json2.put("Name", cartItem.get(i).getItem().getName());
+            json2.put("Description", cartItem.get(i).getItem().getDescription());
+            json2.put("Price", cartItem.get(i).getItem().getPrice());
             json2.put("Quantity", cartItem.get(i).getQuantity());
             json3.put(json2);
         }
@@ -305,6 +303,87 @@ public class MainController {
                 else return new ResponseEntity<>("Status is not a valid Id!", HttpStatus.FORBIDDEN);
             }
             else return new ResponseEntity<>("Order doesn't exist!", HttpStatus.NOT_FOUND);
+        }
+        else return new ResponseEntity<>("You are not logged in or not a manager!", HttpStatus.FORBIDDEN);
+    }
+
+    @RequestMapping(value = "/vinyls", method = RequestMethod.GET)
+    public ResponseEntity<?> getVinyl(@RequestBody JwtRequest vinylRequest) throws JSONException{
+        if(loggedIn(vinylRequest)) {
+            List<Item> items = itemService.findAll();
+
+            JSONObject json = new JSONObject();
+            JSONArray json3 = new JSONArray();
+
+            for(int i = 0; i< (long) items.size(); i++){
+                JSONObject json2 = new JSONObject();
+                json2.put("Id", items.get(i).getId());
+                json2.put("Name", items.get(i).getName());
+                json2.put("Description", items.get(i).getDescription());
+                json2.put("Price", items.get(i).getPrice());
+                json2.put("Quantity", items.get(i).getQuantity());
+                json3.put(json2);
+            }
+
+            json.put("Vinyls", json3);
+
+            return new ResponseEntity<>(json.toString(), HttpStatus.OK);
+        }
+        else return new ResponseEntity<>("You are not logged in!", HttpStatus.FORBIDDEN);
+    }
+
+    @RequestMapping(value = "/customers", method = RequestMethod.GET)
+    public ResponseEntity<?> getCustomers(@RequestBody JwtRequest customersRequest) throws JSONException{
+        if(loggedIn(customersRequest) && userService.findByEmailAddress(customersRequest.getUsername()).getUserRole().getId() == 2){
+            UserRole userRole = new UserRole((long)1,"customer");
+            List<User> users = userService.findByUserRole(userRole);
+
+            JSONObject json = new JSONObject();
+            JSONArray json3 = new JSONArray();
+
+            for(int i = 0; i< (long) users.size(); i++){
+                JSONObject json2 = new JSONObject();
+                json2.put("Email", users.get(i).getEmailAddress());
+                json2.put("First Name", users.get(i).getFirstName());
+                json2.put("Last Name", users.get(i).getLastName());
+                json3.put(json2);
+            }
+
+            json.put("Customers", json3);
+
+            return new ResponseEntity<>(json.toString(), HttpStatus.OK);
+        }
+        else return new ResponseEntity<>("You are not logged in or not a manager!", HttpStatus.FORBIDDEN);
+    }
+
+    @RequestMapping(value = "/users/{user_id}/orders", method = RequestMethod.GET)
+    public ResponseEntity<?> getUserOrder(@RequestBody JwtRequest userOrderRequest, @PathVariable Long user_id) throws JSONException {
+        if(loggedIn(userOrderRequest) && userService.findByEmailAddress(userOrderRequest.getUsername()).getUserRole().getId() == 2){
+            try {
+                if (userService.findById(user_id).getEmailAddress().isEmpty()) {
+                    return new ResponseEntity<>("User id doesn't exist!", HttpStatus.BAD_REQUEST);
+                } else {
+
+                    List<Order> orders = orderService.findByUserId(user_id);
+                    JSONObject json = new JSONObject();
+                    JSONArray json3 = new JSONArray();
+
+                    for (int i = 0; i < (long) orders.size(); i++) {
+                        JSONObject json2 = new JSONObject();
+                        json2.put("Cost", orders.get(i).getTotal_price());
+                        json2.put("Order Date", orders.get(i).getCreatedAt());
+                        json2.put("Status", orders.get(i).getStatus().getStatus());
+                        json3.put(json2);
+                    }
+
+                    json.put("Orders", json3);
+
+                    return new ResponseEntity<>(json.toString(), HttpStatus.OK);
+                }
+            }
+            catch (EntityNotFoundException e){
+                return new ResponseEntity<>("User id doesn't exist!", HttpStatus.BAD_REQUEST);
+            }
         }
         else return new ResponseEntity<>("You are not logged in or not a manager!", HttpStatus.FORBIDDEN);
     }
