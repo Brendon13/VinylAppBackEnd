@@ -12,5 +12,4 @@ public interface UserService {
     List<User> findByUserRole(UserRole userRole);
     void delete(User user);
     User findById(Long id);
-   // List<User> findAll();
 }
