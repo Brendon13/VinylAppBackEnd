@@ -102,10 +102,10 @@ public class MainController {
     }
 
     @GetMapping(value = "/customer/cart/detail")
-    public ResponseEntity<?> getCart(@RequestBody JwtRequest getCartRequest) throws JSONException {
-        if (loggedIn(getCartRequest)) {
+    public ResponseEntity<?> getCart(@RequestParam String email, @RequestParam Long user_id) throws JSONException {
+        if (userService.findByEmailAddress(email) != null && userService.findById(user_id) != null) {
 
-            Cart cart = cartService.findByUserId(userService.findByEmailAddress(getCartRequest.getUsername()).getId());
+            Cart cart = cartService.findByUserId(user_id);
             List<CartItem> cartItem = cartItemService.findByCartId(cart.getId());
             double totalPrice = 0;
 
@@ -140,12 +140,13 @@ public class MainController {
 
     @PostMapping(value = "/vinyls/cart/{vinyl_id}")
     public @ResponseBody ResponseEntity<?> addVinyl(@Valid @RequestBody JwtVinylRequest addVinylRequest, @PathVariable Long vinyl_id){
+        if(loggedIn(addVinylRequest)){
+            try {
         Item item = itemService.findById(vinyl_id);
         Cart cart = cartService.findByUserId(userService.findByEmailAddress(addVinylRequest.getUsername()).getId());
         CartItem cartItem = new CartItem();
 
-        if(loggedIn(addVinylRequest)){
-           try {
+
                if (addVinylRequest.getQuantity() <= 0)
                    return new ResponseEntity<>("Quantity can't be negative or zero!", HttpStatus.FORBIDDEN);
                else if (addVinylRequest.getQuantity() > item.getQuantity()) {
@@ -309,8 +310,8 @@ public class MainController {
     }
 
     @GetMapping(value = "/vinyls")
-    public ResponseEntity<?> getVinyl(@RequestBody JwtRequest vinylRequest) throws JSONException{
-        if(loggedIn(vinylRequest)) {
+    public ResponseEntity<?> getVinyl(@RequestParam String email, @RequestParam Long user_id) throws JSONException{
+        if(userService.findByEmailAddress(email) != null && userService.findById(user_id) != null) {
             List<Item> items = itemService.findAll();
 
             JSONObject json = new JSONObject();
@@ -334,8 +335,8 @@ public class MainController {
     }
 
     @GetMapping(value = "/customers")
-    public ResponseEntity<?> getCustomers(@RequestBody JwtRequest customersRequest) throws JSONException{
-        if(loggedIn(customersRequest) && userService.findByEmailAddress(customersRequest.getUsername()).getUserRole().getId() == 2){
+    public ResponseEntity<?> getCustomers(@RequestParam String email, @RequestParam Long user_id) throws JSONException{
+        if(userService.findByEmailAddress(email) != null && userService.findById(user_id) != null && userService.findByEmailAddress(email).getUserRole().getId() == 2){
             UserRole userRole = new UserRole((long)1,"customer");
             List<User> users = userService.findByUserRole(userRole);
 
@@ -358,8 +359,8 @@ public class MainController {
     }
 
     @GetMapping(value = "/users/{user_id}/orders")
-    public ResponseEntity<?> getUserOrder(@RequestBody JwtRequest userOrderRequest, @PathVariable Long user_id) throws JSONException {
-        if(loggedIn(userOrderRequest) && userService.findByEmailAddress(userOrderRequest.getUsername()).getUserRole().getId() == 2){
+    public ResponseEntity<?> getUserOrder(@RequestParam String email, @RequestParam Long manager_id, @PathVariable Long user_id) throws JSONException {
+        if(userService.findByEmailAddress(email) != null && userService.findById(manager_id) != null && userService.findByEmailAddress(email).getUserRole().getId() == 2){
             try {
                 if (userService.findById(user_id).getEmailAddress().isEmpty()) {
                     return new ResponseEntity<>("User id doesn't exist!", HttpStatus.BAD_REQUEST);
