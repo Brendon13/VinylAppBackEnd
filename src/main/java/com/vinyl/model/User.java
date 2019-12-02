@@ -3,7 +3,6 @@ package com.vinyl.model;
 import javax.persistence.*;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 import java.util.Set;
 
 @Entity
@@ -26,6 +25,8 @@ public class User {
 
     @NotBlank(message = "Password can't be blank")
     private String password;
+
+    private String authToken;
 
     @OneToOne
     @JoinColumn(name = "user_role_id", nullable = false, foreignKey=@ForeignKey(name = "Fk_user_user_role_id"))
@@ -109,5 +110,13 @@ public class User {
 
     public void setOrder(Set<Order> order) {
         this.order = order;
+    }
+
+    public String getAuthToken() {
+        return authToken;
+    }
+
+    public void setAuthToken(String authToken) {
+        this.authToken = authToken;
     }
 }

@@ -2,22 +2,24 @@ package com.vinyl.model;
 
 import java.io.Serializable;
 
-public class JwtRequest implements Serializable {
+public class JwtVinylRequest implements Serializable {
 
     private static final long serialVersionUID = 5926468583005150707L;
 
     private String username;
     private String password;
+    private Long quantity;
 
     //need default constructor for JSON Parsing
-    public JwtRequest()
+    public JwtVinylRequest()
     {
 
     }
 
-    public JwtRequest(String username, String password) {
+    public JwtVinylRequest(String username, String password, Long status) {
         this.setUsername(username);
         this.setPassword(password);
+        this.setQuantity(status);
     }
 
     public String getUsername() {
@@ -34,5 +36,13 @@ public class JwtRequest implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public Long getQuantity() {
+        return quantity;
+    }
+
+    public void setQuantity(Long quantity) {
+        this.quantity = quantity;
     }
 }
