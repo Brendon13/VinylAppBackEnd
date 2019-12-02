@@ -8,4 +8,5 @@ import java.util.Optional;
 public interface OrderService {
     void save(Order order);
     Order findById(Long id);
+    List<Order> findByUserId(Long id);
 }

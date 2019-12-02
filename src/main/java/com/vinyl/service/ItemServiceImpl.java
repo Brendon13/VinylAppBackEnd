@@ -5,6 +5,7 @@ import com.vinyl.repository.ItemRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.Optional;
 
 @Service
@@ -29,4 +30,9 @@ public class ItemServiceImpl implements ItemService{
 
     @Override
     public void delete(Item item) {itemRepository.delete(item);}
+
+    @Override
+    public List<Item> findAll(){
+        return itemRepository.findAll();
+    }
 }
