@@ -14,7 +14,6 @@ public class JwtAddVinylRequest implements Serializable {
     private Long stock;
     private String description;
 
-    //need default constructor for JSON Parsing
     public JwtAddVinylRequest()
     {
 

@@ -5,5 +5,4 @@ import com.vinyl.model.Cart;
 public interface CartService {
     Cart findByUserId(Long userId);
     void save(Cart cart);
-    void delete(Cart cart);
 }

@@ -10,7 +10,6 @@ public class JwtVinylRequest implements Serializable {
     private String password;
     private Long quantity;
 
-    //need default constructor for JSON Parsing
     public JwtVinylRequest()
     {
 
