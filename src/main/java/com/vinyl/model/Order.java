@@ -1,4 +1,3 @@
-
 package com.vinyl.model;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;

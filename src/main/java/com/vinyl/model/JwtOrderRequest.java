@@ -11,7 +11,6 @@ public class JwtOrderRequest implements Serializable {
 
     private Long status;
 
-    //need default constructor for JSON Parsing
     public JwtOrderRequest()
     {
 

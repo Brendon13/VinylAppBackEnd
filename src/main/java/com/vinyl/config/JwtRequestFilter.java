@@ -1,6 +1,5 @@
 package com.vinyl.config;
 
-
 import com.vinyl.service.JwtUserDetailsService;
 import io.jsonwebtoken.ExpiredJwtException;
 import org.springframework.beans.factory.annotation.Autowired;
