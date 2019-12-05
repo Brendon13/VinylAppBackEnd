@@ -29,8 +29,8 @@ public class User {
     @NotBlank(message = "Password can't be blank")
     private String password;
 
-    @ApiModelProperty(hidden = true)
-    private String authToken;
+//    @ApiModelProperty(hidden = true)
+//    private String authToken;
 
     @ApiModelProperty(hidden = true)
     @OneToOne
@@ -119,11 +119,11 @@ public class User {
         this.order = order;
     }
 
-    public String getAuthToken() {
-        return authToken;
-    }
-
-    public void setAuthToken(String authToken) {
-        this.authToken = authToken;
-    }
+//    public String getAuthToken() {
+//        return authToken;
+//    }
+//
+//    public void setAuthToken(String authToken) {
+//        this.authToken = authToken;
+//    }
 }
