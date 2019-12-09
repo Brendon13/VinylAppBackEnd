@@ -42,7 +42,7 @@ public class ManagerController {
     private JwtTokenUtil jwtTokenUtil;
 
     @ApiOperation(value = "Add vinyl to store", response = Iterable.class)
-    @PostMapping(value = "/vinyls")
+    @PostMapping(value = "/vinylsAdd")
     public ResponseEntity<?> addVinyl(@RequestHeader("Authorization") String auth, @RequestBody Item vinyl){
         String email = jwtTokenUtil.getUsernameFromToken(auth.substring(7));
         Item item = new Item();
