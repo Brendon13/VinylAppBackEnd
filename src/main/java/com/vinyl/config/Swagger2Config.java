@@ -3,7 +3,9 @@ package com.vinyl.config;
 import com.google.common.collect.Lists;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import springfox.documentation.builders.ApiInfoBuilder;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
 import springfox.documentation.service.*;
@@ -26,18 +28,19 @@ public class Swagger2Config {
                 .paths(PathSelectors.any())
                 .build()
                 .securitySchemes(Lists.newArrayList(apiKey()))
-                .securityContexts(Lists.newArrayList(securityContext()))
-                .apiInfo(generateApiInfo());
+                .securityContexts(Lists.newArrayList(securityContext()));
+        //.apiInfo(generateApiInfo());
     }
 
-    private ApiInfo generateApiInfo() {
-        return new ApiInfoBuilder().title("Vinyl Store API")
-                .description("Vinyl Store API")
-                .contact(new Contact("Kovacs Brendon", "", "brendon.kovacs@gmail.com"))
-                .license("Apache 2.0")
-                .licenseUrl("http://www.apache.org/licenses/LICENSE-2.0.html")
-                .version("1.0.0")
-                .build();
+    @Bean
+    WebMvcConfigurer configurer () {
+        return new WebMvcConfigurerAdapter() {
+            @Override
+            public void addResourceHandlers (ResourceHandlerRegistry registry) {
+                registry.addResourceHandler("/config/swagger_config.yaml")
+                .addResourceLocations("classpath:/config");
+            }
+        };
     }
 
     @Bean

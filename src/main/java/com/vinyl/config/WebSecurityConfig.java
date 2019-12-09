@@ -54,6 +54,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
             "/configuration/security",
             "/swagger-ui.html",
             "/webjars/**",
+            "/config/swagger_config.yaml",
+
 
             "/VinylStore/api/users/login",
             "/VinylStore/api/users",
