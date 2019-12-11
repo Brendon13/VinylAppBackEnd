@@ -17,6 +17,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -120,12 +121,14 @@ public class ManagerController {
     @PutMapping(value = "/orders/{order_id}")
     public @ResponseBody ResponseEntity<?> updateOrder(@RequestHeader("Authorization") String auth, @RequestParam Long status, @PathVariable Long order_id){
         Order order;
+        Date date = new Date();
         String email = jwtTokenUtil.getUsernameFromToken(auth.substring(7));
         if(userService.findByEmailAddress(email).getUserRole().getId() == 2){
             if(orderService.findById(order_id) != null){
                 if(status == 1 || status == 2){
                     order = orderService.findById(order_id);
                     order.setStatus(statusService.findById(status));
+                    order.setUpdatedAt(date);
                     orderService.save(order);
 
                     return ResponseEntity.ok("Order status changed!");
