@@ -2,7 +2,6 @@ package com.vinyl.service;
 
 import com.vinyl.model.User;
 import com.vinyl.model.UserRole;
-import com.vinyl.service.UserService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -31,6 +30,7 @@ public class UserServiceTest {
         user.setFirstName("Customer");
         user.setLastName("User");
         user.setEmailAddress("test.email@gmail.com");
+        when(bCryptPasswordEncoder.encode("123456")).thenReturn("$2a$10$GVTnofdX9dK/1xZXRv3hNuGy2Jw1mV56/cl2untyOlqYdRoVYB2X2");
         user.setPassword(bCryptPasswordEncoder.encode("123456"));
 
         Mockito.when(mockUserService.findByEmailAddress("test.email@gmail.com")).thenReturn(user);
@@ -51,6 +51,7 @@ public class UserServiceTest {
         user1.setFirstName("User");
         user1.setLastName("User");
         user1.setEmailAddress("user.user1@gmail.com");
+        when(bCryptPasswordEncoder.encode("123456")).thenReturn("$2a$10$GVTnofdX9dK/1xZXRv3hNuGy2Jw1mV56/cl2untyOlqYdRoVYB2X2");
         user1.setPassword(bCryptPasswordEncoder.encode("123456"));
         user1.setUserRole(userRole);
 
@@ -59,6 +60,7 @@ public class UserServiceTest {
         user2.setLastName("User");
         user2.setEmailAddress("user.user2@gmail.com");
         user2.setPassword(bCryptPasswordEncoder.encode("123456"));
+        when(bCryptPasswordEncoder.encode("123456")).thenReturn("$2a$10$GVTnofdX9dK/1xZXRv3hNuGy2Jw1mV56/cl2untyOlqYdRoVYB2X2");
         user2.setUserRole(userRole);
 
         userList.add(user1);
@@ -81,6 +83,7 @@ public class UserServiceTest {
         user.setFirstName("User");
         user.setLastName("User");
         user.setEmailAddress("user.user1@gmail.com");
+        when(bCryptPasswordEncoder.encode("123456")).thenReturn("$2a$10$GVTnofdX9dK/1xZXRv3hNuGy2Jw1mV56/cl2untyOlqYdRoVYB2X2");
         user.setPassword(bCryptPasswordEncoder.encode("123456"));
         user.setUserRole(userRole);
 
@@ -99,6 +102,7 @@ public class UserServiceTest {
         user.setFirstName("User");
         user.setLastName("User");
         user.setEmailAddress("user.user1@gmail.com");
+        when(bCryptPasswordEncoder.encode("123456")).thenReturn("$2a$10$GVTnofdX9dK/1xZXRv3hNuGy2Jw1mV56/cl2untyOlqYdRoVYB2X2");
         user.setPassword(bCryptPasswordEncoder.encode("123456"));
 
         doNothing().when(mockUserService).save(isA(User.class));
@@ -113,6 +117,7 @@ public class UserServiceTest {
         user.setFirstName("User");
         user.setLastName("User");
         user.setEmailAddress("user.user1@gmail.com");
+        when(bCryptPasswordEncoder.encode("123456")).thenReturn("$2a$10$GVTnofdX9dK/1xZXRv3hNuGy2Jw1mV56/cl2untyOlqYdRoVYB2X2");
         user.setPassword(bCryptPasswordEncoder.encode("123456"));
 
         doNothing().when(mockUserService).saveManager(isA(User.class));
@@ -127,6 +132,7 @@ public class UserServiceTest {
         user.setFirstName("User");
         user.setLastName("User");
         user.setEmailAddress("user.user1@gmail.com");
+        when(bCryptPasswordEncoder.encode("123456")).thenReturn("$2a$10$GVTnofdX9dK/1xZXRv3hNuGy2Jw1mV56/cl2untyOlqYdRoVYB2X2");
         user.setPassword(bCryptPasswordEncoder.encode("123456"));
 
         doNothing().when(mockUserService).delete(isA(User.class));

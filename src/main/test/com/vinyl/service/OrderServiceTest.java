@@ -38,6 +38,7 @@ public class OrderServiceTest {
         user.setFirstName("User");
         user.setLastName("User");
         user.setEmailAddress("user.user1@gmail.com");
+        when(bCryptPasswordEncoder.encode("123456")).thenReturn("$2a$10$GVTnofdX9dK/1xZXRv3hNuGy2Jw1mV56/cl2untyOlqYdRoVYB2X2");
         user.setPassword(bCryptPasswordEncoder.encode("123456"));
         user.setUserRole(userRole);
 
@@ -67,6 +68,7 @@ public class OrderServiceTest {
         user.setFirstName("User");
         user.setLastName("User");
         user.setEmailAddress("user.user1@gmail.com");
+        when(bCryptPasswordEncoder.encode("123456")).thenReturn("$2a$10$GVTnofdX9dK/1xZXRv3hNuGy2Jw1mV56/cl2untyOlqYdRoVYB2X2");
         user.setPassword(bCryptPasswordEncoder.encode("123456"));
         user.setUserRole(userRole);
 
@@ -100,6 +102,7 @@ public class OrderServiceTest {
         user1.setFirstName("User1");
         user1.setLastName("User1");
         user1.setEmailAddress("user.user1@gmail.com");
+        when(bCryptPasswordEncoder.encode("123456")).thenReturn("$2a$10$GVTnofdX9dK/1xZXRv3hNuGy2Jw1mV56/cl2untyOlqYdRoVYB2X2");
         user1.setPassword(bCryptPasswordEncoder.encode("123456"));
         user1.setUserRole(userRole);
 
