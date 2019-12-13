@@ -19,6 +19,11 @@ public class CartItemServiceImpl implements CartItemService {
     }
 
     @Override
+    public CartItem findByItemId(Long itemId){
+        return cartItemRepository.findByItemId(itemId);
+    }
+
+    @Override
     public void save(CartItem cartItem){
         cartItemRepository.save(cartItem);
     }

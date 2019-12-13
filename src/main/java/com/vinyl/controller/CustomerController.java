@@ -118,19 +118,24 @@ public class CustomerController {
     @DeleteMapping(value = "/users/{user_id}/cart/{item_id}")
     public @ResponseBody ResponseEntity<?> removeVinyl(@RequestHeader("Authorization") String auth, @PathVariable Long user_id, @PathVariable Long item_id){
         String email = jwtTokenUtil.getUsernameFromToken(auth.substring(7));
+        final List<Boolean> noItems = new ArrayList<>();
 
         Cart cart = cartService.findByUserId(user_id);
         List<CartItem> cartItem = cartItemService.findByCartId(cart.getId());
 
-        if(userService.findByEmailAddress(email).getId().equals(user_id)){
-            cartItem.forEach(cItem -> {
-                if(cItem.getItem().getId().equals(item_id))
-                    cartItemService.delete(cItem);
-            });
-
-            return ResponseEntity.ok("Item deleted from cart!");
+        if(!cartItem.isEmpty()) {
+            if (userService.findByEmailAddress(email).getId().equals(user_id)) {
+                cartItem.forEach(cItem -> {
+                    if (cartItemService.findByItemId(item_id) == null)
+                        noItems.add(true);
+                    else cartItemService.delete(cItem);
+                });
+                if (noItems.contains(true))
+                    return new ResponseEntity<>("No items with that ID in cart!", HttpStatus.FORBIDDEN);
+                else return ResponseEntity.ok("Item deleted from cart!");
+            } else return new ResponseEntity<>("You are not logged in", HttpStatus.FORBIDDEN);
         }
-        else return new ResponseEntity<>("You are not logged in", HttpStatus.FORBIDDEN);
+        else return new ResponseEntity<>("No items in cart!", HttpStatus.FORBIDDEN);
     }
 
     @ApiOperation(value = "Place order", response = Iterable.class)
@@ -166,6 +171,10 @@ public class CustomerController {
                 order.setStatus(statusService.findById(1L));
                 order.setTotal_price(totalPrice);
                 orderService.save(order);
+
+                cartItem.forEach(cItem -> {
+                    cartItemService.delete(cItem);
+                });
 
                 return ResponseEntity.ok("Order placed!");
             }

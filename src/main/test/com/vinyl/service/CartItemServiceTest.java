@@ -1,7 +1,6 @@
 package com.vinyl.service;
 
 import com.vinyl.model.*;
-import com.vinyl.service.CartItemService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -39,6 +38,7 @@ public class CartItemServiceTest {
         user.setFirstName("User");
         user.setLastName("User");
         user.setEmailAddress("user.user1@gmail.com");
+        when(bCryptPasswordEncoder.encode("123456")).thenReturn("$2a$10$GVTnofdX9dK/1xZXRv3hNuGy2Jw1mV56/cl2untyOlqYdRoVYB2X2");
         user.setPassword(bCryptPasswordEncoder.encode("123456"));
 
         final Cart cart = new Cart();
@@ -79,6 +79,7 @@ public class CartItemServiceTest {
         user.setFirstName("User");
         user.setLastName("User");
         user.setEmailAddress("user.user1@gmail.com");
+        when(bCryptPasswordEncoder.encode("123456")).thenReturn("$2a$10$GVTnofdX9dK/1xZXRv3hNuGy2Jw1mV56/cl2untyOlqYdRoVYB2X2");
         user.setPassword(bCryptPasswordEncoder.encode("123456"));
 
         final Cart cart = new Cart();

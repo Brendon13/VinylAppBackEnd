@@ -146,7 +146,7 @@ public class ManagerController {
         String email = jwtTokenUtil.getUsernameFromToken(auth.substring(7));
 
         if(userService.findByEmailAddress(email).getUserRole().getId() == 2){
-            UserRole userRole = new UserRole((long)1,"customer");
+            UserRole userRole = new UserRole(1L,"customer");
             List<User> users = userService.findByUserRole(userRole);
 
             JSONObject json = new JSONObject();
@@ -167,13 +167,12 @@ public class ManagerController {
         else return new ResponseEntity<>("You are not a manager!", HttpStatus.FORBIDDEN);
     }
 
-    @ApiOperation(value = "Get order form an user", response = Iterable.class)
+    @ApiOperation(value = "Get order from an user", response = Iterable.class)
     @GetMapping(value = "/users/{user_id}/orders")
     public ResponseEntity<?> getUserOrder(@RequestHeader("Authorization") String auth, @PathVariable Long user_id) throws JSONException {
         String email = jwtTokenUtil.getUsernameFromToken(auth.substring(7));
             if (userService.findByEmailAddress(email).getUserRole().getId() == 2) {
-                try {
-                    if (userService.findById(user_id).getEmailAddress().isEmpty()) {
+                    if (userService.findById(user_id) == null) {
                         return new ResponseEntity<>("User id doesn't exist!", HttpStatus.BAD_REQUEST);
                     } else {
 
@@ -194,9 +193,6 @@ public class ManagerController {
 
                         return new ResponseEntity<>(json.toString(), HttpStatus.OK);
                     }
-                } catch (EntityNotFoundException e) {
-                    return new ResponseEntity<>("User id doesn't exist!", HttpStatus.BAD_REQUEST);
-                }
             } else return new ResponseEntity<>("You are not a manager!", HttpStatus.FORBIDDEN);
 
     }

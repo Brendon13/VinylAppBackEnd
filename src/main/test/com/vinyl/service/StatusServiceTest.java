@@ -1,7 +1,6 @@
 package com.vinyl.service;
 
 import com.vinyl.model.Status;
-import com.vinyl.service.StatusService;
 import org.junit.Assert;
 import org.junit.Test;
 import org.junit.runner.RunWith;
